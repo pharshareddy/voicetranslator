@@ -1,67 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Speech Translator</title>
-<style>
-body {
-  font-family: sans-serif;
-}
-#container {
-  width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-}
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-textarea {
-  width: 100%;
-  height: 100px;
-  margin-bottom: 10px;
-  padding: 5px;
-  border: 1px solid #ccc;
-}
-select {
-    margin-bottom: 10px;
-}
-button {
-  padding: 10px 20px;
-  margin-right: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-button:hover {
-  background-color: #45a049;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Translator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        select, p {
+            font-size: 18px;
+            margin: 10px;
+        }
+        #inputText, #translatedText {
+            font-weight: bold;
+            color: #555;
+        }
+    </style>
 </head>
 <body>
-<div id="container">
-  <h1>Speech Translator</h1>
-
-  <label for="languageSelect">Target Language:</label>
-  <select id="languageSelect">
-    <option value="es">Spanish</option>
-    <option value="fr">French</option>
-    <option value="de">German</option>
-    <option value="hi">Hindi</option>
-    <option value="te">Telugu</option>
-    <option value="ta">Tamil</option>
-  </select>
-
-  <label for="original">Original Text:</label>
-  <textarea id="original" readonly></textarea>
-
-  <label for="translated">Translated Text:</label>
-  <textarea id="translated" readonly></textarea>
-
-  <button id="speakButton">🔊 Start</button>
-  <button id="exitButton">🛑 Stop</button>
-</div>
-
-<script src="script.js"></script> </body>
+    <h1>Voice Translator</h1>
+    <button onclick="startSpeechRecognition()">Start Speaking</button>
+    <p id="inputText">Recognized Speech: </p>
+    <select id="targetLanguage">
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+        <option value="hi">Hindi</option>
+    </select>
+    <button onclick="translateText()">Translate</button>
+    <p id="translatedText">Translated Text: </p>
+</body>
 </html>
