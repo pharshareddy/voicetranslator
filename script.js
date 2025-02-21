@@ -1,93 +1,58 @@
-// script.js
-const speakButton = document.getElementById('speakButton');
-const exitButton = document.getElementById('exitButton');
-const languageSelect = document.getElementById('languageSelect');
-const originalText = document.getElementById('original');
-const translatedText = document.getElementById('translated');
+let recognizedText = "";
 
-let isRunning = false;
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-if (!SpeechRecognition) {
-  alert("Speech recognition is not supported in this browser.");
-} else {
-  const recognition = new SpeechRecognition();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-
-  async function translateText(text, targetLang) {
-    try {
-      const apiKey = 'YOUR_GOOGLE_TRANSLATE_API_KEY'; // **REPLACE WITH YOUR API KEY**
-      const apiUrl = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`;
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          q: text,
-          target: targetLang,
-          format: 'text',
-        }),
-      });
-
-      const data = await response.json();
-      if (data.error) {
-        console.error("Google Translate API error:", data.error);
-        return "Translation failed: " + data.error.message;
-      }
-      return data.data.translations[0].translatedText;
-
-    } catch (error) {
-      console.error("Translation API error:", error);
-      return "Translation failed.";
+// Function to start speech recognition
+function startSpeechRecognition() {
+    // Check if the browser supports speech recognition
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert("Your browser does not support speech recognition. Please try Chrome.");
+        return;
     }
-  }
 
-  function speakText(text, lang) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    window.speechSynthesis.speak(utterance);
-  }
-
-  function startRecognition() {
-    if (!isRunning) return;
-    speakButton.textContent = "🎙 Listening...";
+    // Create a new speech recognition instance
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'en-US'; // Set language to English (US)
     recognition.start();
 
-    recognition.onresult = async (event) => {
-      const speech = event.results[0][0].transcript;
-      originalText.textContent = speech;
-      const targetLang = languageSelect.value;
-      const translated = await translateText(speech, targetLang);
-      translatedText.textContent = translated;
-      speakText(translated, targetLang);
+    // Event listener for speech recognition results
+    recognition.onresult = (event) => {
+        recognizedText = event.results[0][0].transcript; // Get recognized text
+        document.getElementById("inputText").innerText = "Recognized Speech: " + recognizedText;
     };
 
+    // Handle speech recognition errors
     recognition.onerror = (event) => {
-      console.error('Speech recognition error:', event.error);
+        alert("Speech recognition error: " + event.error);
     };
+}
 
-    recognition.onend = () => {
-      speakButton.textContent = "🔊 Start";
-      if (isRunning) {
-        startRecognition();
-      }
-    };
-  }
+// Function to translate recognized text
+function translateText() {
+    // Ensure there is text to translate
+    if (!recognizedText) {
+        alert("Please speak something first!");
+        return;
+    }
 
-  speakButton.addEventListener('click', () => {
-    isRunning = true;
-    startRecognition();
-  });
+    // Get the target language selected by the user
+    const targetLang = document.getElementById("targetLanguage").value;
 
-  exitButton.addEventListener('click', () => {
-    isRunning = false;
-    recognition.abort();
-    translatedText.textContent = 'Translation stopped.';
-    originalText.textContent = 'Translation stopped.';
-    speakButton.textContent = "🔊 Start"; // Reset button text
-  });
+    // Call Google Translate API to get the translation
+    fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLang}&dt=t&q=${encodeURIComponent(recognizedText)}`)
+        .then(response => response.json())
+        .then(data => {
+            const translatedText = data[0][0][0]; // Extract translated text
+            document.getElementById("translatedText").innerText = "Translated Text: " + translatedText;
+            speakText(translatedText, targetLang); // Speak the translated text
+        })
+        .catch(() => {
+            document.getElementById("translatedText").innerText = "Translation error. Please try again.";
+        });
+}
+
+// Function to speak the translated text
+function speakText(text, lang) {
+    const utterance = new SpeechSynthesisUtterance(text); // Create a speech synthesis instance
+    utterance.lang = lang; // Set the language for speech
+    window.speechSynthesis.speak(utterance); // Speak the translated text
 }
 
