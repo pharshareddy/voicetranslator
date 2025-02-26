@@ -53,7 +53,7 @@ function speakText(text, lang) {
         'ja': 'ja-JP', 'ar': 'ar-SA', 'nl': 'nl-NL', 'ko': 'ko-KR',
         'tr': 'tr-TR', 'el': 'el-GR', 'pl': 'pl-PL', 'sv': 'sv-SE',
         'th': 'th-TH', 'vi': 'vi-VN', 'he': 'he-IL', 'cs': 'cs-CZ',
-        'da': 'da-DK', 'fi': 'fi-FI', 'ro': 'ro-RO', 'uk': 'uk-UA'
+        'da': 'da-DK', 'fi': 'fi-FI', 'ro': 'ro-RO', 'uk': 'uk-UA','te':'te-TE'
     };
 
     utterance.lang = langMap[lang] || lang; 
